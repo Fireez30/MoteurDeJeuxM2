@@ -71,7 +71,7 @@ class MainWidget : public QOpenGLWidget, protected QOpenGLFunctions
 public:
     float x = 0.0;
     float y = 0.0;
-    float z = -20.0;
+    float z = -30.0;
     int hmapsize = 0;
 
     explicit MainWidget(QWidget *parent = 0);
@@ -82,7 +82,6 @@ protected:
     void mouseReleaseEvent(QMouseEvent *e) override;
     void timerEvent(QTimerEvent *e) override;
     void keyPressEvent ( QKeyEvent * event ) override;
-
     void initializeGL() override;
     void resizeGL(int w, int h) override;
     void paintGL() override;

@@ -52,8 +52,13 @@
 
 #include <QMouseEvent>
 #include <QKeyEvent>
+#include <QPainter>
 #include <math.h>
+#include <iostream>
 
+int initial_time = time (NULL);
+int final_time,frame_count;
+int last_fps = 0;
 
 MainWidget::MainWidget(QWidget *parent) :
     QOpenGLWidget(parent),
@@ -77,23 +82,25 @@ MainWidget::~MainWidget()
 
 void MainWidget::keyPressEvent (QKeyEvent * event)
 {
-    if(event->key() == Qt::Key_Q) // à chager par une auter touche
+    if(event->key() == Qt::Key_Q)
            x++;
 
-    if(event->key() == Qt::Key_D) // à chager par une auter touche
+    if(event->key() == Qt::Key_D)
            x--;
 
-    if(event->key() == Qt::Key_Z) // à chager par une auter touche
+    if(event->key() == Qt::Key_Z)
           y--;
 
-    if(event->key() == Qt::Key_S) // à chager par une auter touche
+    if(event->key() == Qt::Key_S)
           y++;
 
-    if(event->key() == Qt::Key_W) // à chager par une auter touche
+    if(event->key() == Qt::Key_W)
           z++;
 
-    if(event->key() == Qt::Key_X) // à chager par une auter touche
+    if(event->key() == Qt::Key_X)
           z--;
+    if(event->key() == Qt::Key_U)
+          angularSpeed = 0;
 
         update();
 }
@@ -212,7 +219,7 @@ void MainWidget::resizeGL(int w, int h)
     qreal aspect = qreal(w) / qreal(h ? h : 1);
 
     // Set near plane to 3.0, far plane to 7.0, field of view 45 degrees
-    const qreal zNear = 1.0, zFar = 45.0, fov = 45.0;
+    const qreal zNear = 1.0, zFar = 256.0, fov = 45.0;
 
     // Reset projection
     projection.setToIdentity();
@@ -222,19 +229,34 @@ void MainWidget::resizeGL(int w, int h)
 }
 //! [5]
 
+
 void MainWidget::paintGL()
 {
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     texture->bind();
-
 //! [6]
-//!
+
+
     // Calculate model view transformation
     QMatrix4x4 matrix;
     matrix.translate(x, y, z);
     matrix.rotate(rotation);
+/*
+    frame_count++;
+    final_time = time(NULL);
+    if (final_time - initial_time > 0)
+    {
+        //display
+        last_fps = frame_count/ (final_time - initial_time);
+        frame_count = 0;
+        initial_time = final_time;
+    }
+
+    std::cout<<"FPS : "<<last_fps<<std::endl;
+    // Render text
+*/
 
     // Set modelview-projection matrix
     program.setUniformValue("mvp_matrix", projection * matrix);

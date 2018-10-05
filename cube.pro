@@ -11,8 +11,7 @@ SOURCES += \
 
 HEADERS += \
     mainwidget.h \
-    geometryengine.h \
-    CImg.h
+    geometryengine.h
 
 RESOURCES += \
     shaders.qrc \
@@ -21,3 +20,5 @@ RESOURCES += \
 # install
 target.path = $$[QT_INSTALL_EXAMPLES]/opengl/cube
 INSTALLS += target
+
+DISTFILES +=

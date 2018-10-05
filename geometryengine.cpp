@@ -55,10 +55,8 @@
 #include <stdio.h>      /* printf, scanf, puts, NULL */
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>
-#include <CImg.h>
-
-using namespace cimg_library;
-#define cimg_display 0
+#include <iostream>
+#include <QImage>
 
 struct VertexData
 {
@@ -88,36 +86,40 @@ GeometryEngine::~GeometryEngine()
 //! [0]
 void GeometryEngine::initPlaneGeometry()
 {
-     srand (time(NULL));
-    //init vertices for a 16x16 plane surface
-    CImg<float> img("hmap.bmp");
-    VertexData *vertices = new VertexData[img.width()*img.height()];
-    int currentIndex = 0;
-    //generate points
-    cimg_forXYC(img,x,y,c) {
-            vertices[currentIndex] = {QVector3D(x,y,c),QVector2D(((float) x)/img.width()-1.0,((float) y)/img.height()-1.0)};            currentIndex++;
-        }
-    //create indices tab to create triangles //256 face on the plane
-    GLushort *indices = new GLushort[img.width()*img.height()*6];
+    QImage img;
+               img.load(":/heightmap-1.png");
+               img = img.convertToFormat(QImage::Format_Grayscale8);
 
-    for(int i = 0; i < img.width()-1; i++)
-        for(int j = 0; j < img.height()-1; j++){
-            indices[6*((i*img.width()-1)+j)] = (j+1)+img.width()*(i+1);
-            indices[6*((i*img.width()-1)+j) +1] = j+img.width()*(i+1);
-            indices[6*((i*img.width()-1)+j) +2] = j+i*img.width();
-            indices[6*((i*img.width()-1)+j) +3] = j+i*img.width();
-            indices[6*((i*img.width()-1)+j) +4] = (j+1)+i*img.width();
-            indices[6*((i*img.width()-1)+j) +5] = (j+1)+(i+1)*img.width();
-        }
-    // Transfer vertex data to VBO 0
-    arrayBuf.bind();
-    arrayBuf.allocate(vertices, img.width()*img.height() * sizeof(VertexData));
+               int nbVertices = img.height() * img.width();
+               VertexData vertices[nbVertices];
+               int index = 0;
+               for(int j=0;j<img.height();j++){
+                   for(int i=0;i<img.width();i++){
+                       vertices[index] = {QVector3D(i,j, 0), QVector2D(i/(float)(img.width()-1), j/(float)(img.height()-1))};
+                       index++;
+                   }
+               }
+               hmapsize = (img.height()-1)*(img.width()-1)*6;
+               GLushort indices[hmapsize];
+               for(int i=0; i<img.width()-1;i++){
+                    for(int j=0;j<img.height()-1;j++){
 
-    hmapsize = img.width()*img.height()*6;
-    // Transfer index data to VBO 1
-    indexBuf.bind();
-    indexBuf.allocate(indices, img.width()*img.height()*6 * sizeof(GLushort));
+                       indices[6*(j*(img.width()-1)+i)] = i+j*img.width();
+                       indices[6*(j*(img.width()-1)+i)+1] = i+img.width()*(j+1);
+                       indices[6*(j*(img.width()-1)+i)+2] = i+1+img.width()*(j+1);
+                       indices[6*(j*(img.width()-1)+i)+3] = i+j*img.width();
+                       indices[6*(j*(img.width()-1)+i)+4] = i+1+img.width()*(j+1);
+                       indices[6*(j*(img.width()-1)+i)+5] = i+1+j*img.width();
+                   }
+               }
+           //! [1]
+               // Transfer vertex data to VBO 0
+               arrayBuf.bind();
+               arrayBuf.allocate(vertices, nbVertices * sizeof(VertexData));
 
+               // Transfer index data to VBO 1
+               indexBuf.bind();
+               indexBuf.allocate(indices, hmapsize * sizeof(GLushort));
 }
 
 void GeometryEngine::initCubeGeometry()
