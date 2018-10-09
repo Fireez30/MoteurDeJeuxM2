@@ -55,16 +55,19 @@
 #include <QPainter>
 #include <math.h>
 #include <iostream>
+#include <QTime>
+
 
 int initial_time = time (NULL);
 int final_time,frame_count;
 int last_fps = 0;
 
-MainWidget::MainWidget(QWidget *parent) :
+MainWidget::MainWidget(QWidget *parent,int maxfps) :
     QOpenGLWidget(parent),
     geometries(0),
     texture(0),
-    angularSpeed(0)
+    angularSpeed(0),
+    max_fps(maxfps)
 {
 }
 
@@ -79,6 +82,8 @@ MainWidget::~MainWidget()
 }
 
 //! [0]
+
+
 
 void MainWidget::keyPressEvent (QKeyEvent * event)
 {
@@ -99,9 +104,19 @@ void MainWidget::keyPressEvent (QKeyEvent * event)
 
     if(event->key() == Qt::Key_X)
           z--;
+
     if(event->key() == Qt::Key_U)
           angularSpeed = 0;
 
+    if(event->key() == Qt::Key_Right){
+        rotationAxis = QVector3D(0,1,0);
+        angularSpeed = 0.5;
+    }
+
+    if(event->key() == Qt::Key_Left){
+        rotationAxis = QVector3D(0,-1,0);
+        angularSpeed = 0.5;
+    }
         update();
 }
 void MainWidget::mousePressEvent(QMouseEvent *e)
@@ -143,6 +158,19 @@ void MainWidget::timerEvent(QTimerEvent *)
         // Update rotation
         rotation = QQuaternion::fromAxisAndAngle(rotationAxis, angularSpeed) * rotation;
 
+
+        frame_count++;
+        final_time = time(NULL);
+        if (final_time - initial_time > 0)
+        {
+            //display
+            last_fps = frame_count/ (final_time - initial_time);
+            frame_count = 0;
+            initial_time = final_time;
+        }
+        std::cout << "Fps : " << last_fps << std::endl;
+        // Render text
+        //timer.start(1000/max_fps,this);
         // Request an update
         update();
     }
@@ -153,7 +181,7 @@ void MainWidget::initializeGL()
 {
     initializeOpenGLFunctions();
 
-    glClearColor(0, 0, 0, 1);
+    glClearColor(120, 120, 0, 1);
 
    // glOrtho(-17.0,17.0,-17.0,17.0,3.0,7.0);
     initShaders();
@@ -168,11 +196,11 @@ void MainWidget::initializeGL()
 //! [2]
 
     geometries = new GeometryEngine;
-
+    rotation = QQuaternion::fromAxisAndAngle(1,0,0,135);
     // Use QBasicTimer because its faster than QTimer
-    timer.start(12, this);
-}
 
+    timer.start(1000/max_fps, this);
+}
 //! [3]
 void MainWidget::initShaders()
 {
@@ -198,7 +226,7 @@ void MainWidget::initShaders()
 void MainWidget::initTextures()
 {
     // Load cube.png image
-    texture = new QOpenGLTexture(QImage(":/cube.png").mirrored());
+    texture = new QOpenGLTexture(QImage("hmap3.png"));
 
     // Set nearest filtering mode for texture minification
     texture->setMinificationFilter(QOpenGLTexture::Nearest);
@@ -219,7 +247,7 @@ void MainWidget::resizeGL(int w, int h)
     qreal aspect = qreal(w) / qreal(h ? h : 1);
 
     // Set near plane to 3.0, far plane to 7.0, field of view 45 degrees
-    const qreal zNear = 1.0, zFar = 256.0, fov = 45.0;
+    const qreal zNear = 1.0, zFar = 100.0, fov = 45.0;
 
     // Reset projection
     projection.setToIdentity();
@@ -232,31 +260,18 @@ void MainWidget::resizeGL(int w, int h)
 
 void MainWidget::paintGL()
 {
+
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     texture->bind();
 //! [6]
 
-
     // Calculate model view transformation
     QMatrix4x4 matrix;
     matrix.translate(x, y, z);
     matrix.rotate(rotation);
-/*
-    frame_count++;
-    final_time = time(NULL);
-    if (final_time - initial_time > 0)
-    {
-        //display
-        last_fps = frame_count/ (final_time - initial_time);
-        frame_count = 0;
-        initial_time = final_time;
-    }
 
-    std::cout<<"FPS : "<<last_fps<<std::endl;
-    // Render text
-*/
 
     // Set modelview-projection matrix
     program.setUniformValue("mvp_matrix", projection * matrix);

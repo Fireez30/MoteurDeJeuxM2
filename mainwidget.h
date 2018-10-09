@@ -61,6 +61,7 @@
 #include <QBasicTimer>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
+#include <QTime>
 
 class GeometryEngine;
 
@@ -69,12 +70,16 @@ class MainWidget : public QOpenGLWidget, protected QOpenGLFunctions
     Q_OBJECT
 
 public:
+    QTime m_time;
+    int m_frameCount;
+    int max_fps;
+
     float x = 0.0;
     float y = 0.0;
     float z = -30.0;
     int hmapsize = 0;
 
-    explicit MainWidget(QWidget *parent = 0);
+    explicit MainWidget(QWidget *parent = 0,int maxfps=60);
     ~MainWidget();
 
 protected:

@@ -54,10 +54,8 @@
 #include <QVector3D>
 #include <stdio.h>      /* printf, scanf, puts, NULL */
 #include <stdlib.h>     /* srand, rand */
-#include <time.h>
-#include <iostream>
 #include <QImage>
-
+#include <iostream>
 struct VertexData
 {
     QVector3D position;
@@ -87,39 +85,37 @@ GeometryEngine::~GeometryEngine()
 void GeometryEngine::initPlaneGeometry()
 {
     QImage img;
-               img.load(":/heightmap-1.png");
-               img = img.convertToFormat(QImage::Format_Grayscale8);
+    img.load("hmap3.png");
+    std::cout << "Avant la génération des points " << std::endl;
+    std::cout << qGray(img.pixel(0,0)) << std::endl;
+    VertexData vertices[256];
+     int index = 0;
 
-               int nbVertices = img.height() * img.width();
-               VertexData vertices[nbVertices];
-               int index = 0;
-               for(int j=0;j<img.height();j++){
-                   for(int i=0;i<img.width();i++){
-                       vertices[index] = {QVector3D(i,j, 0), QVector2D(i/(float)(img.width()-1), j/(float)(img.height()-1))};
-                       index++;
-                   }
-               }
-               hmapsize = (img.height()-1)*(img.width()-1)*6;
-               GLushort indices[hmapsize];
-               for(int i=0; i<img.width()-1;i++){
-                    for(int j=0;j<img.height()-1;j++){
+    for(int i=0;i<16;i++){
+        for(int j=0;j<16;j++){
+             vertices[index] = {QVector3D(-8.0+(float)(i), -8.0+(float)(j),qGray(img.pixel(i*(img.width()-1)/15.0,(j*(img.height()-1)/15.0)))/16.0), QVector2D((float)(i)/(float)(15.0), (float)(j)/(float)(15.0))};
+             index++;
+         }
+     }
+     GLushort indices[15*15*6];
+     for(int j=0;j<15;j++){
+             for(int i=0; i<15;i++){
+                 indices[6*(j*15 + i)] = i+j*16;                 //Haut gauche
+                 indices[6*(j*15 + i)+2] = i+16*(j+1);           //Bas gauche
+                 indices[6*(j*15 + i)+1] = i+1+16*(j+1);         //Bas droit
+                 indices[6*(j*15 + i)+3] = i+j*16;               //Haut gauche
+                 indices[6*(j*15 + i)+4] = i+1+j*16;             //Haut droit
+                 indices[6*(j*15 + i)+5] = i+1+16*(j+1);         //Bas droit
+             }
+         }
+ //! [1]
+     // Transfer vertex data to VBO 0
+     arrayBuf.bind();
+     arrayBuf.allocate(vertices, 256 * sizeof(VertexData));
 
-                       indices[6*(j*(img.width()-1)+i)] = i+j*img.width();
-                       indices[6*(j*(img.width()-1)+i)+1] = i+img.width()*(j+1);
-                       indices[6*(j*(img.width()-1)+i)+2] = i+1+img.width()*(j+1);
-                       indices[6*(j*(img.width()-1)+i)+3] = i+j*img.width();
-                       indices[6*(j*(img.width()-1)+i)+4] = i+1+img.width()*(j+1);
-                       indices[6*(j*(img.width()-1)+i)+5] = i+1+j*img.width();
-                   }
-               }
-           //! [1]
-               // Transfer vertex data to VBO 0
-               arrayBuf.bind();
-               arrayBuf.allocate(vertices, nbVertices * sizeof(VertexData));
-
-               // Transfer index data to VBO 1
-               indexBuf.bind();
-               indexBuf.allocate(indices, hmapsize * sizeof(GLushort));
+     // Transfer index data to VBO 1
+     indexBuf.bind();
+     indexBuf.allocate(indices, 15*15*6 * sizeof(GLushort));
 }
 
 void GeometryEngine::initCubeGeometry()
@@ -215,7 +211,7 @@ void GeometryEngine::drawPlaneGeometry(QOpenGLShaderProgram *program)
     program->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
 
     // Draw cube geometry using indices from VBO 1
-    glDrawElements(GL_TRIANGLES, hmapsize, GL_UNSIGNED_SHORT, 0);
+    glDrawElements(GL_TRIANGLES, 15*15*6, GL_UNSIGNED_SHORT, 0);
 }
 //! [2]
 void GeometryEngine::drawCubeGeometry(QOpenGLShaderProgram *program)
