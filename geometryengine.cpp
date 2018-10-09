@@ -100,12 +100,12 @@ void GeometryEngine::initPlaneGeometry()
      GLushort indices[15*15*6];
      for(int j=0;j<15;j++){
              for(int i=0; i<15;i++){
-                 indices[6*(j*15 + i)] = i+j*16;                 //Haut gauche
-                 indices[6*(j*15 + i)+2] = i+16*(j+1);           //Bas gauche
-                 indices[6*(j*15 + i)+1] = i+1+16*(j+1);         //Bas droit
-                 indices[6*(j*15 + i)+3] = i+j*16;               //Haut gauche
-                 indices[6*(j*15 + i)+4] = i+1+j*16;             //Haut droit
-                 indices[6*(j*15 + i)+5] = i+1+16*(j+1);         //Bas droit
+                 indices[6*(j*15 + i)] = i+j*16;
+                 indices[6*(j*15 + i)+2] = i+16*(j+1);
+                 indices[6*(j*15 + i)+1] = i+1+16*(j+1);
+                 indices[6*(j*15 + i)+3] = i+j*16;
+                 indices[6*(j*15 + i)+4] = i+1+j*16;
+                 indices[6*(j*15 + i)+5] = i+1+16*(j+1);
              }
          }
  //! [1]

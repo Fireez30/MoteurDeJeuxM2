@@ -57,7 +57,7 @@
 #include <iostream>
 #include <QTime>
 
-
+bool start = true;
 int initial_time = time (NULL);
 int final_time,frame_count;
 int last_fps = 0;
@@ -181,7 +181,7 @@ void MainWidget::initializeGL()
 {
     initializeOpenGLFunctions();
 
-    glClearColor(120, 120, 0, 1);
+    glClearColor(0, 200, 0, 1);
 
    // glOrtho(-17.0,17.0,-17.0,17.0,3.0,7.0);
     initShaders();
@@ -196,7 +196,16 @@ void MainWidget::initializeGL()
 //! [2]
 
     geometries = new GeometryEngine;
-    rotation = QQuaternion::fromAxisAndAngle(1,0,0,135);
+        QMatrix4x4 matrix;
+
+        QVector3D eye = QVector3D(x,y-10,z);
+        QVector3D center = QVector3D(0.0,0.0,0.0);
+        QVector3D up = QVector3D(0,1,0);
+        matrix.lookAt(eye,center,up);
+        start = false;
+
+    // Set modelview-projection matrix
+    program.setUniformValue("mvp_matrix", projection * matrix);
     // Use QBasicTimer because its faster than QTimer
 
     timer.start(1000/max_fps, this);
@@ -271,7 +280,6 @@ void MainWidget::paintGL()
     QMatrix4x4 matrix;
     matrix.translate(x, y, z);
     matrix.rotate(rotation);
-
 
     // Set modelview-projection matrix
     program.setUniformValue("mvp_matrix", projection * matrix);
