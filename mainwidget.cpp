@@ -53,6 +53,7 @@
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QPainter>
+#include <QElapsedTimer>
 #include <math.h>
 #include <iostream>
 #include <QTime>
@@ -66,9 +67,13 @@ MainWidget::MainWidget(QWidget *parent,int maxfps) :
     QOpenGLWidget(parent),
     geometries(0),
     texture(0),
-    angularSpeed(0),
-    max_fps(maxfps)
+    angularSpeed(0)
 {
+    if (maxfps == 0)
+        max_fps = 1;
+    else
+        max_fps = maxfps;
+    et.start();
 }
 
 MainWidget::~MainWidget()
@@ -117,7 +122,6 @@ void MainWidget::keyPressEvent (QKeyEvent * event)
         rotationAxis = QVector3D(0,-1,0);
         angularSpeed = 0.5;
     }
-        update();
 }
 void MainWidget::mousePressEvent(QMouseEvent *e)
 {
@@ -167,12 +171,15 @@ void MainWidget::timerEvent(QTimerEvent *)
             last_fps = frame_count/ (final_time - initial_time);
             frame_count = 0;
             initial_time = final_time;
+            std::cout << "Fps : " << last_fps << std::endl;
         }
-        std::cout << "Fps : " << last_fps << std::endl;
+
         // Render text
         //timer.start(1000/max_fps,this);
         // Request an update
+        et.restart();
         update();
+
     }
 }
 //! [1]
@@ -197,8 +204,7 @@ void MainWidget::initializeGL()
 
     geometries = new GeometryEngine;
 
-    rotation = QQuaternion(135.0,0.0,0.0,1.0);
-    y = y - 10;
+    rotation = QQuaternion::fromAxisAndAngle(1,0,0,135);
     // Use QBasicTimer because its faster than QTimer
 
     timer.start(1000/max_fps, this);
@@ -272,7 +278,7 @@ void MainWidget::paintGL()
     // Calculate model view transformation
     QMatrix4x4 matrix;
     matrix.translate(x, y, z);
-   matrix.rotate(rotation);
+    matrix.rotate(rotation);
 /*
 if (start){
     QVector3D eye = QVector3D(x,y-10,-z);

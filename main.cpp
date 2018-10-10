@@ -51,10 +51,14 @@
 #include <QApplication>
 #include <QLabel>
 #include <QSurfaceFormat>
+#include <QGridLayout>
+#include <QKeyEvent>
 
 #ifndef QT_NO_OPENGL
 #include "mainwidget.h"
+#include "windowsinput.h"
 #endif
+
 
 int main(int argc, char *argv[])
 {
@@ -67,15 +71,12 @@ int main(int argc, char *argv[])
     app.setApplicationName("cube");
     app.setApplicationVersion("0.1");
 
+
 #ifndef QT_NO_OPENGL
-    MainWidget widget(0,50);
-    widget.show();
-    MainWidget widget2(0,10);
-    //widget2.show();
-    MainWidget widget3(0,100);
-    //widget3.show();
-    MainWidget widget4(0,1000);
-    //widget4.show();
+    windowsinput wip(0);
+    wip.showF();
+  //  MainWidget widget(0,10);
+  //  widget.show();
 #else
     QLabel note("OpenGL Support required");
     note.show();

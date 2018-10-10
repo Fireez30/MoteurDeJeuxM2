@@ -55,6 +55,7 @@
 
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
+#include <QElapsedTimer>
 #include <QMatrix4x4>
 #include <QQuaternion>
 #include <QVector2D>
@@ -70,17 +71,24 @@ class MainWidget : public QOpenGLWidget, protected QOpenGLFunctions
     Q_OBJECT
 
 public:
+    QElapsedTimer et;
     QTime m_time;
     int m_frameCount;
     int max_fps;
 
     float x = 0.0;
     float y = 0.0;
-    float z = 30.0;
+    float z = -30.0;
     int hmapsize = 0;
 
     explicit MainWidget(QWidget *parent = 0,int maxfps=60);
     ~MainWidget();
+
+
+    QVector2D mousePressPosition;
+    QVector3D rotationAxis;
+    qreal angularSpeed;
+    QQuaternion rotation;
 
 protected:
     void mousePressEvent(QMouseEvent *e) override;
@@ -103,10 +111,6 @@ private:
 
     QMatrix4x4 projection;
 
-    QVector2D mousePressPosition;
-    QVector3D rotationAxis;
-    qreal angularSpeed;
-    QQuaternion rotation;
 };
 
 #endif // MAINWIDGET_H
