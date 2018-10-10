@@ -196,16 +196,9 @@ void MainWidget::initializeGL()
 //! [2]
 
     geometries = new GeometryEngine;
-        QMatrix4x4 matrix;
 
-        QVector3D eye = QVector3D(x,y-10,z);
-        QVector3D center = QVector3D(0.0,0.0,0.0);
-        QVector3D up = QVector3D(0,1,0);
-        matrix.lookAt(eye,center,up);
-        start = false;
-
-    // Set modelview-projection matrix
-    program.setUniformValue("mvp_matrix", projection * matrix);
+    rotation = QQuaternion(135.0,0.0,0.0,1.0);
+    y = y - 10;
     // Use QBasicTimer because its faster than QTimer
 
     timer.start(1000/max_fps, this);
@@ -279,8 +272,15 @@ void MainWidget::paintGL()
     // Calculate model view transformation
     QMatrix4x4 matrix;
     matrix.translate(x, y, z);
-    matrix.rotate(rotation);
-
+   matrix.rotate(rotation);
+/*
+if (start){
+    QVector3D eye = QVector3D(x,y-10,-z);
+    QVector3D center = QVector3D(0.0,0.0,0.0);
+    QVector3D up = QVector3D(0,1,0);
+    matrix.lookAt(eye,center,up);
+    start = false;
+}*/
     // Set modelview-projection matrix
     program.setUniformValue("mvp_matrix", projection * matrix);
 //! [6]
