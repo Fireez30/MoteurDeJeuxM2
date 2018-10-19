@@ -75,14 +75,16 @@ public:
     QTime m_time;
     int m_frameCount;
     int max_fps;
+    int actualSeason;
+    std::vector<QVector3D> v;
 
     float x = 0.0;
     float y = 0.0;
     float z = -30.0;
     int hmapsize = 0;
 
-    explicit MainWidget(QWidget *parent = 0,int maxfps=60);
-    ~MainWidget();
+    explicit MainWidget(QWidget *parent = 0,int maxfps=60,int saison=0);
+    ~MainWidget() override;
 
 
     QVector2D mousePressPosition;
@@ -111,6 +113,8 @@ private:
 
     QMatrix4x4 projection;
 
+public slots:
+    void changeSeason(int a);
 };
 
 #endif // MAINWIDGET_H

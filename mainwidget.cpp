@@ -51,11 +51,13 @@
 #include "mainwidget.h"
 
 #include <QMouseEvent>
+#include <GL/gl.h>
 #include <QKeyEvent>
 #include <QPainter>
 #include <QElapsedTimer>
 #include <math.h>
 #include <iostream>
+#include <QVector3D>
 #include <QTime>
 
 bool start = true;
@@ -63,17 +65,23 @@ int initial_time = time (NULL);
 int final_time,frame_count;
 int last_fps = 0;
 
-MainWidget::MainWidget(QWidget *parent,int maxfps) :
+MainWidget::MainWidget(QWidget *parent,int maxfps,int saison) :
     QOpenGLWidget(parent),
     geometries(0),
     texture(0),
-    angularSpeed(0)
+    angularSpeed(0),
+    actualSeason(saison)
 {
     if (maxfps == 0)
         max_fps = 1;
     else
         max_fps = maxfps;
     et.start();
+    v = std::vector<QVector3D>();
+    v.push_back(QVector3D(0,200,0));
+    v.push_back(QVector3D(200,0,0));
+    v.push_back(QVector3D(0,0,200));
+    v.push_back(QVector3D(0,0,0));
 }
 
 MainWidget::~MainWidget()
@@ -123,6 +131,17 @@ void MainWidget::keyPressEvent (QKeyEvent * event)
         angularSpeed = 0.5;
     }
 }
+
+void MainWidget::changeSeason(int a)
+{
+    actualSeason++;
+    actualSeason = actualSeason %4;//cycle through 4 saisons
+    //float color[4]= {v[actualSeason][0],v[actualSeason][1],v[actualSeason][2],1};
+    //float color[4] = {255.0,255.0,0.0,1.0};
+    //glLightfv(GL_LIGHT0,GL_DIFFUSE,color);
+    update();
+}
+
 void MainWidget::mousePressEvent(QMouseEvent *e)
 {
     // Save mouse press position
@@ -178,9 +197,10 @@ void MainWidget::timerEvent(QTimerEvent *)
         //timer.start(1000/max_fps,this);
         // Request an update
         et.restart();
-        update();
+
 
     }
+            update();
 }
 //! [1]
 
@@ -188,7 +208,7 @@ void MainWidget::initializeGL()
 {
     initializeOpenGLFunctions();
 
-    glClearColor(0, 200, 0, 1);
+    glClearColor(v[actualSeason][0], v[actualSeason][1], v[actualSeason][2], 1);
 
    // glOrtho(-17.0,17.0,-17.0,17.0,3.0,7.0);
     initShaders();
@@ -201,7 +221,23 @@ void MainWidget::initializeGL()
     // Enable back face culling
     glEnable(GL_CULL_FACE);
 //! [2]
+//!
+//!
+/*    GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat mat_shininess[] = { 50.0 };
+    GLfloat light_position[] = { 1.0, 1.0, 1.0, 0.0 };
+    glClearColor (0.0, 0.0, 0.0, 0.0);
+    glShadeModel (GL_SMOOTH);
 
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_DEPTH_TEST);
+    int pos[4] = {0,0,30,1};
+*/
     geometries = new GeometryEngine;
 
     rotation = QQuaternion::fromAxisAndAngle(1,0,0,135);
@@ -271,6 +307,7 @@ void MainWidget::paintGL()
 
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(v[actualSeason][0], v[actualSeason][1], v[actualSeason][2], 1);
 
     texture->bind();
 //! [6]
@@ -279,6 +316,8 @@ void MainWidget::paintGL()
     QMatrix4x4 matrix;
     matrix.translate(x, y, z);
     matrix.rotate(rotation);
+
+
 /*
 if (start){
     QVector3D eye = QVector3D(x,y-10,-z);

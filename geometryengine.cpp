@@ -93,7 +93,7 @@ void GeometryEngine::initPlaneGeometry()
 
     for(int i=0;i<16;i++){
         for(int j=0;j<16;j++){
-             vertices[index] = {QVector3D(-8.0+(float)(i), -8.0+(float)(j),qGray(img.pixel(i*(img.width()-1)/15.0,(j*(img.height()-1)/15.0)))/16.0), QVector2D((float)(i)/(float)(15.0), (float)(j)/(float)(15.0))};
+             vertices[index] = {QVector3D(-8.0+(float)(i), -8.0+(float)(j),qGray(img.pixel(i*(img.width()-1)/15.0,(j*(img.height()-1)/15.0)))/255.0), QVector2D((float)(i)/(float)(15.0), (float)(j)/(float)(15.0))};
              index++;
          }
      }

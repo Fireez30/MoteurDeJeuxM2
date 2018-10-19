@@ -13,19 +13,24 @@
 
 class windowsinput : public QOpenGLWidget, protected QOpenGLFunctions
 {
-
+    Q_OBJECT
 public :
     MainWidget widget;
     MainWidget widget2;
     MainWidget widget3;
     MainWidget widget4;
-
+    QBasicTimer saison;
     QWidget w;
     void keyPressEvent ( QKeyEvent * event ) override;
 
     void showF();
     windowsinput(QWidget *p);
     ~windowsinput();
+    void timerEvent(QTimerEvent *) override;
+
+signals:
+        void timerSeason(int valuechanged);
+
 };
 
 #endif // WINDOWSINPUT_H

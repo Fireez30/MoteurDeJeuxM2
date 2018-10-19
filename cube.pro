@@ -4,7 +4,8 @@ TARGET = cube
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    windowsinput.cpp
+    windowsinput.cpp \
+    quadtree.cpp
 
 SOURCES += \
     mainwidget.cpp \
@@ -13,7 +14,8 @@ SOURCES += \
 HEADERS += \
     mainwidget.h \
     geometryengine.h \
-    windowsinput.h
+    windowsinput.h \
+    quadtree.h
 
 RESOURCES += \
     shaders.qrc \
