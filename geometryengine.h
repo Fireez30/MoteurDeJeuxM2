@@ -64,9 +64,11 @@ public:
 
     void drawCubeGeometry(QOpenGLShaderProgram *program);
     void drawPlaneGeometry(QOpenGLShaderProgram *program);
+    void drawQuadTreeGeometry(QOpenGLShaderProgram *program);
 private:
     void initCubeGeometry();
     void initPlaneGeometry();
+    void initQuadTreeGeometry();
 
     QOpenGLBuffer arrayBuf;
     QOpenGLBuffer indexBuf;

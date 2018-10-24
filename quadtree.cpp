@@ -111,7 +111,13 @@ void QuadTree::ComputeDivision(){
     childs.push_back(QuadTree(3,h/2,w/2,getCenter()));
 }
 
-void QuadTree::DiviseAtLevel(int depth)
+void QuadTree::DiviseAtLevel(int depth,int start)
 {
-
+    if (!(start >= depth)){
+        ComputeDivision();
+        for(int i = 0; i < childs.size(); i++)
+        {
+            childs[i].DiviseAtLevel(depth,1+start);
+        }
+    }
 }

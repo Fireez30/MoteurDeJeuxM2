@@ -188,6 +188,15 @@ void GeometryEngine::initCubeGeometry()
 //! [1]
 }
 
+void GeometryEngine::initQuadTreeGeometry()
+{
+
+}
+
+void GeometryEngine::drawQuadTreeGeometry(QOpenGLShaderProgram *program)
+{
+
+}
 void GeometryEngine::drawPlaneGeometry(QOpenGLShaderProgram *program)
 {
     // Tell OpenGL which VBOs to use

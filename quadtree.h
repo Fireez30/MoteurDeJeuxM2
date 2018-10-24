@@ -32,7 +32,7 @@ public :
     QuadTree getChildsAtIndex(int id);
     int getId();
     void ComputeDivision();
-    void DiviseAtLevel(int depth);
+    void DiviseAtLevel(int depth,int start);
 };
 
 #endif // QUADTREE_H

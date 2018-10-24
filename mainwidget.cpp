@@ -81,7 +81,7 @@ MainWidget::MainWidget(QWidget *parent,int maxfps,int saison) :
     v.push_back(QVector3D(0,200,0));
     v.push_back(QVector3D(200,0,0));
     v.push_back(QVector3D(0,0,200));
-    v.push_back(QVector3D(0,0,0));
+    v.push_back(QVector3D(200,200,0));
 }
 
 MainWidget::~MainWidget()
@@ -208,7 +208,7 @@ void MainWidget::initializeGL()
 {
     initializeOpenGLFunctions();
 
-    glClearColor(v[actualSeason][0], v[actualSeason][1], v[actualSeason][2], 1);
+    glClearColor(0,0,0, 1);
 
    // glOrtho(-17.0,17.0,-17.0,17.0,3.0,7.0);
     initShaders();
@@ -307,7 +307,6 @@ void MainWidget::paintGL()
 
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(v[actualSeason][0], v[actualSeason][1], v[actualSeason][2], 1);
 
     texture->bind();
 //! [6]
@@ -329,7 +328,7 @@ if (start){
     // Set modelview-projection matrix
     program.setUniformValue("mvp_matrix", projection * matrix);
 //! [6]
-
+    program.setUniformValue("basecolor",QVector4D(v[actualSeason][0]/255, v[actualSeason][1]/255, v[actualSeason][2]/255, 1));
     // Use texture unit 0 which contains cube.png
     program.setUniformValue("texture", 0);
 
