@@ -10,10 +10,11 @@
 #include <QTime>
 
 Cube::Cube(){
+    std::cout << "id =" << id << std::endl;
 }
+
 void Cube::CreateGeometry()
 {
-
     // For cube we would need only 8 vertices but we have to
     // duplicate vertex for each face because texture coordinate
     // is different.

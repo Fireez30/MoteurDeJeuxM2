@@ -11,11 +11,13 @@ BaseObject::BaseObject() : indexBuf(QOpenGLBuffer::IndexBuffer){
     initializeOpenGLFunctions();
     rotation = QQuaternion(0,0,0,0);
     position = QVector3D(0,0,0);
+    id = 0;
     arrayBuf.create();
     indexBuf.create();
 }
 
 BaseObject::BaseObject(QQuaternion rot,QVector3D geo) : indexBuf(QOpenGLBuffer::IndexBuffer){
+    initializeOpenGLFunctions();
     rotation = rot;
     position = geo;
     arrayBuf.create();

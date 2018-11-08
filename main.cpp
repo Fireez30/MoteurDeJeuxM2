@@ -53,7 +53,7 @@
 #include <QSurfaceFormat>
 #include <QGridLayout>
 #include <QKeyEvent>
-
+#include <iostream>
 #ifndef QT_NO_OPENGL
 #include "mainwidget.h"
 #include "windowsinput.h"
@@ -73,6 +73,7 @@ int main(int argc, char *argv[])
 
 
 #ifndef QT_NO_OPENGL
+    std::cout << "debut constructeur" << std::endl;
     windowsinput wip(0);
     wip.showF();
   //  MainWidget widget(0,10);

@@ -60,6 +60,7 @@
 #include <QVector3D>
 #include <QTime>
 #include "cube.h"
+
 bool start = true;
 int initial_time = time (NULL);
 int final_time,frame_count;
@@ -69,9 +70,9 @@ MainWidget::MainWidget(QWidget *parent,int maxfps,int saison) :
     QOpenGLWidget(parent),
     texture(0),
     angularSpeed(0),
-    actualSeason(saison),
-    program(this->context())
+    actualSeason(saison)
 {
+
     if (maxfps == 0)
         max_fps = 1;
     else
@@ -83,6 +84,7 @@ MainWidget::MainWidget(QWidget *parent,int maxfps,int saison) :
     v.push_back(QVector3D(0,0,200));
     v.push_back(QVector3D(200,200,0));
     scene = Cube();
+    initializeGL();
 }
 
 MainWidget::~MainWidget()
@@ -204,6 +206,7 @@ void MainWidget::timerEvent(QTimerEvent *)
 void MainWidget::initializeGL()
 {
     initializeOpenGLFunctions();
+
     glClearColor(0,0,0, 1);
 
    // glOrtho(-17.0,17.0,-17.0,17.0,3.0,7.0);

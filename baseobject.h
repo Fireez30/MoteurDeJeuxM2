@@ -26,6 +26,7 @@ protected:
     QOpenGLBuffer indexBuf;
     vector<BaseObject> childs;
     BaseObject* parent;
+    int id;
 
 public :
     BaseObject();
