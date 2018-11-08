@@ -2,10 +2,11 @@
 #define CUBE_H
 #include "baseobject.h"
 
- class Cube : BaseObject
+ class Cube : public BaseObject, protected QOpenGLFunctions
  {
 
 public :
+     Cube();
      void CreateGeometry();
      void Render(QOpenGLShaderProgram *program);
  };

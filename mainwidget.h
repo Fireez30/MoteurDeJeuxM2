@@ -54,6 +54,7 @@
 #include "geometryengine.h"
 
 #include <QOpenGLWidget>
+#include "baseobject.h"
 #include <QOpenGLFunctions>
 #include <QElapsedTimer>
 #include <QMatrix4x4>
@@ -100,14 +101,14 @@ protected:
     void initializeGL() override;
     void resizeGL(int w, int h) override;
     void paintGL() override;
-
+    BaseObject scene;
     void initShaders();
     void initTextures();
 
 private:
     QBasicTimer timer;
     QOpenGLShaderProgram program;
-    GeometryEngine *geometries;
+    //GeometryEngine *geometries;
 
     QOpenGLTexture *texture;
 

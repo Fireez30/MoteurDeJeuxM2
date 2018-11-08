@@ -59,7 +59,7 @@
 #include <iostream>
 #include <QVector3D>
 #include <QTime>
-
+#include "cube.h"
 bool start = true;
 int initial_time = time (NULL);
 int final_time,frame_count;
@@ -67,7 +67,6 @@ int last_fps = 0;
 
 MainWidget::MainWidget(QWidget *parent,int maxfps,int saison) :
     QOpenGLWidget(parent),
-    geometries(0),
     texture(0),
     angularSpeed(0),
     actualSeason(saison)
@@ -82,6 +81,7 @@ MainWidget::MainWidget(QWidget *parent,int maxfps,int saison) :
     v.push_back(QVector3D(200,0,0));
     v.push_back(QVector3D(0,0,200));
     v.push_back(QVector3D(200,200,0));
+    scene = Cube();
 }
 
 MainWidget::~MainWidget()
@@ -90,7 +90,6 @@ MainWidget::~MainWidget()
     // and the buffers.
     makeCurrent();
     delete texture;
-    delete geometries;
     doneCurrent();
 }
 
@@ -221,24 +220,10 @@ void MainWidget::initializeGL()
     // Enable back face culling
     glEnable(GL_CULL_FACE);
 //! [2]
-//!
-//!
-/*    GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-    GLfloat mat_shininess[] = { 50.0 };
-    GLfloat light_position[] = { 1.0, 1.0, 1.0, 0.0 };
-    glClearColor (0.0, 0.0, 0.0, 0.0);
-    glShadeModel (GL_SMOOTH);
 
-    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glEnable(GL_DEPTH_TEST);
-    int pos[4] = {0,0,30,1};
-*/
-    geometries = new GeometryEngine;
+
+    //scene.CreateGeometry();
 
     rotation = QQuaternion::fromAxisAndAngle(1,0,0,135);
     // Use QBasicTimer because its faster than QTimer
@@ -315,8 +300,6 @@ void MainWidget::paintGL()
     QMatrix4x4 matrix;
     matrix.translate(x, y, z);
     matrix.rotate(rotation);
-
-
 /*
 if (start){
     QVector3D eye = QVector3D(x,y-10,-z);
@@ -333,5 +316,5 @@ if (start){
     program.setUniformValue("texture", 0);
 
     // Draw cube geometry
-    geometries->drawPlaneGeometry(&program);
+    scene.Render(&program);//old version of this is drawTerrainGeometry();
 }

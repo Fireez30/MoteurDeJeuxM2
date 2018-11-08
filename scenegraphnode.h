@@ -1,4 +1,4 @@
-#ifndef SCENEGRAPHNODE_H
+/*#ifndef SCENEGRAPHNODE_H
 #define SCENEGRAPHNODE_H
 
 #include <QVector2D>
@@ -35,3 +35,4 @@ public :
 };
 
 #endif // SCENEGRAPHNODE_H
+*/

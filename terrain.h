@@ -2,7 +2,7 @@
 #define TERRAIN_H
 #include "baseobject.h"
 
- class Terrain : BaseObject
+ class Terrain : BaseObject, protected QOpenGLFunctions
  {
 
 public :

@@ -1,5 +1,6 @@
 #include <QVector2D>
 #include <QVector3D>
+#include <GL/gl.h>
 #include <QQuaternion>
 #include "geometryengine.h"
 #include "baseobject.h"
@@ -80,5 +81,20 @@ void BaseObject::UpdatePositionInSpace(){
     position += parent->GetPosition();
     for (int i = 0; i < childs.size(); i++){
         childs[i].UpdatePositionInSpace();
+    }
+}
+
+void BaseObject::Render(QOpenGLShaderProgram *program)
+{
+    //Render stuff here (render the loaded mesh)
+    for (int i = 0; i < childs.size(); i++){
+        childs[i].Render(program);
+    }
+}
+
+void BaseObject::CreateGeometry(){
+    //Create geometry stuff here (load the object mesh)
+    for (int i = 0; i < childs.size(); i++){
+        childs[i].CreateGeometry();
     }
 }

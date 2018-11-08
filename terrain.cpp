@@ -1,5 +1,13 @@
 #include "terrain.h"
-#include <QImage>
+#include <QMouseEvent>
+#include <GL/gl.h>
+#include <QKeyEvent>
+#include <QPainter>
+#include <QElapsedTimer>
+#include <math.h>
+#include <iostream>
+#include <QVector3D>
+#include <QTime>
 
 void Terrain::CreateGeometry()
 {

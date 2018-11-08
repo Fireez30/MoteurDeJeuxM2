@@ -1,4 +1,4 @@
-#include "scenegraphnode.h"
+/*#include "scenegraphnode.h"
 #include <QVector3D>
 #include <QQuaternion>
 
@@ -79,4 +79,4 @@ void SceneGraphNode::SetChild(SceneGraphNode s,int i){
     if (i < childs.size())
         childs[i] = s;
 }
-
+*/
