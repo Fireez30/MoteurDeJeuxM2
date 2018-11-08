@@ -5,6 +5,7 @@
 #include <QVector3D>
 #include <QQuaternion>
 #include "geometryengine.h"
+#include <QOpenGLBuffer>
 
 using namespace std;
 
@@ -14,8 +15,9 @@ struct VertexData
     QVector2D texCoord;
 };
 
-class BaseObject
+class BaseObject : protected QOpenGLFunctions
 {
+
 protected:
     QQuaternion rotation;
     QVector3D position;

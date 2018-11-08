@@ -2,7 +2,7 @@
 #define CUBE_H
 #include "baseobject.h"
 
- class Cube : public BaseObject, protected QOpenGLFunctions
+ class Cube : public BaseObject
  {
 
 public :

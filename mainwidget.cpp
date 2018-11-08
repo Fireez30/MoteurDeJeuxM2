@@ -69,7 +69,8 @@ MainWidget::MainWidget(QWidget *parent,int maxfps,int saison) :
     QOpenGLWidget(parent),
     texture(0),
     angularSpeed(0),
-    actualSeason(saison)
+    actualSeason(saison),
+    program(this->context())
 {
     if (maxfps == 0)
         max_fps = 1;
@@ -135,9 +136,6 @@ void MainWidget::changeSeason(int a)
 {
     actualSeason++;
     actualSeason = actualSeason %4;//cycle through 4 saisons
-    //float color[4]= {v[actualSeason][0],v[actualSeason][1],v[actualSeason][2],1};
-    //float color[4] = {255.0,255.0,0.0,1.0};
-    //glLightfv(GL_LIGHT0,GL_DIFFUSE,color);
     update();
 }
 
@@ -206,7 +204,6 @@ void MainWidget::timerEvent(QTimerEvent *)
 void MainWidget::initializeGL()
 {
     initializeOpenGLFunctions();
-
     glClearColor(0,0,0, 1);
 
    // glOrtho(-17.0,17.0,-17.0,17.0,3.0,7.0);
@@ -222,8 +219,7 @@ void MainWidget::initializeGL()
 //! [2]
 
 
-
-    //scene.CreateGeometry();
+    scene.CreateGeometry();
 
     rotation = QQuaternion::fromAxisAndAngle(1,0,0,135);
     // Use QBasicTimer because its faster than QTimer
@@ -233,21 +229,35 @@ void MainWidget::initializeGL()
 //! [3]
 void MainWidget::initShaders()
 {
+
+
     // Compile vertex shader
     if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vshader.glsl"))
+    {
+        std::cout << "Erreur lors de la compilation du vertex shader" << std::endl;
         close();
+    }
 
     // Compile fragment shader
     if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fshader.glsl"))
+    {
+        std::cout << "Erreur lors de la compilation du fragment shader" << std::endl;
         close();
+    }
 
     // Link shader pipeline
     if (!program.link())
+    {
+        std::cout << "Erreur lors du link" << std::endl;
         close();
+    }
 
     // Bind shader pipeline for use
     if (!program.bind())
+    {
+        std::cout << "Erreur lors du bind" << std::endl;
         close();
+    }
 }
 //! [3]
 
@@ -300,14 +310,7 @@ void MainWidget::paintGL()
     QMatrix4x4 matrix;
     matrix.translate(x, y, z);
     matrix.rotate(rotation);
-/*
-if (start){
-    QVector3D eye = QVector3D(x,y-10,-z);
-    QVector3D center = QVector3D(0.0,0.0,0.0);
-    QVector3D up = QVector3D(0,1,0);
-    matrix.lookAt(eye,center,up);
-    start = false;
-}*/
+
     // Set modelview-projection matrix
     program.setUniformValue("mvp_matrix", projection * matrix);
 //! [6]

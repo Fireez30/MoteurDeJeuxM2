@@ -101,7 +101,6 @@ protected:
     void initializeGL() override;
     void resizeGL(int w, int h) override;
     void paintGL() override;
-    BaseObject scene;
     void initShaders();
     void initTextures();
 
@@ -109,9 +108,8 @@ private:
     QBasicTimer timer;
     QOpenGLShaderProgram program;
     //GeometryEngine *geometries;
-
     QOpenGLTexture *texture;
-
+    BaseObject scene;
     QMatrix4x4 projection;
 
 public slots:

@@ -10,7 +10,6 @@
 #include <QTime>
 
 Cube::Cube(){
-
 }
 void Cube::CreateGeometry()
 {

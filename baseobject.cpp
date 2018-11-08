@@ -7,14 +7,15 @@
 #include <QImage>
 
 
-BaseObject::BaseObject(){
+BaseObject::BaseObject() : indexBuf(QOpenGLBuffer::IndexBuffer){
+    initializeOpenGLFunctions();
     rotation = QQuaternion(0,0,0,0);
     position = QVector3D(0,0,0);
     arrayBuf.create();
     indexBuf.create();
 }
 
-BaseObject::BaseObject(QQuaternion rot,QVector3D geo){
+BaseObject::BaseObject(QQuaternion rot,QVector3D geo) : indexBuf(QOpenGLBuffer::IndexBuffer){
     rotation = rot;
     position = geo;
     arrayBuf.create();
