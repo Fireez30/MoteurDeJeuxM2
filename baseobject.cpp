@@ -2,10 +2,11 @@
 #include <QVector3D>
 #include <GL/gl.h>
 #include <QQuaternion>
+#include <iostream>
 #include "geometryengine.h"
 #include "baseobject.h"
 #include <QImage>
-
+#include <QFile>
 
 BaseObject::BaseObject() : indexBuf(QOpenGLBuffer::IndexBuffer){
     initializeOpenGLFunctions();
@@ -61,12 +62,14 @@ vector<BaseObject> BaseObject::GetChilds(){
     return childs;
 }
 
-BaseObject BaseObject::GetChildAtIndex(int i){
+BaseObject BaseObject::GetChildAtIndex(unsigned i){
     if (i < childs.size())
         return childs[i];
+    else
+        return BaseObject();
 }
 
-void BaseObject::SetChildAtIndex(BaseObject c, int i){
+void BaseObject::SetChildAtIndex(BaseObject c, unsigned i){
     if (i < childs.size()){
         childs[i] = c;
     }
@@ -82,22 +85,104 @@ void BaseObject::SetParent(BaseObject* b){
 void BaseObject::UpdatePositionInSpace(){
     rotation *= parent->GetRotation();
     position += parent->GetPosition();
-    for (int i = 0; i < childs.size(); i++){
+    for (unsigned i = 0; i < childs.size(); i++){
         childs[i].UpdatePositionInSpace();
     }
 }
 
 void BaseObject::Render(QOpenGLShaderProgram *program)
 {
+    // Tell OpenGL which VBOs to use
+    arrayBuf.bind();
+    indexBuf.bind();
+
+    // Offset for position
+    quintptr offset = 0;
+
+    // Tell OpenGL programmable pipeline how to locate vertex position data
+    int vertexLocation = program->attributeLocation("a_position");
+    program->enableAttributeArray(vertexLocation);
+    program->setAttributeBuffer(vertexLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
+
+    // Offset for texture coordinate
+    offset += sizeof(QVector3D);
+
+    // Tell OpenGL programmable pipeline how to locate vertex texture coordinate data
+    int texcoordLocation = program->attributeLocation("a_texcoord");
+    program->enableAttributeArray(texcoordLocation);
+    program->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
+
+    // Draw cube geometry using indices from VBO 1
+    glDrawElements(GL_TRIANGLE_STRIP, meshSize * 3, GL_UNSIGNED_SHORT, 0);
     //Render stuff here (render the loaded mesh)
-    for (int i = 0; i < childs.size(); i++){
+    for (unsigned i = 0; i < childs.size(); i++){
         childs[i].Render(program);
     }
 }
 
 void BaseObject::CreateGeometry(){
+    std::vector<GLushort> indices;
+    std::vector<QVector2D> textureCoords;
+    std::vector<QVector3D> vertexCoords;
+
+    QFile f(meshFile.data());
+    if (!f.open(QIODevice::ReadOnly)){
+         std::cout<< " Erreur lors de l'ouverture du fichier" << endl;
+         return;
+    }
+    char filter[256];
+    f.readLine(filter,256);
+    while (filter[0] == '#')//remove commentaries lines at the begginin
+    {
+        f.readLine(filter,256);
+    }
+
+    char line[64];
+    int res = f.readLine(line,64);
+    while (res != -1){
+        std::cout << "Ligne lue = " << line << endl;
+    if (line[0] == 'v' && line[1] == 't'){//case of the texture
+        float x,y;
+        sscanf_s(line,"%s%s ",NULL,NULL);//dont read v and t
+        sscanf_s(line,"%f %f",&x,&y);//read both coordinates
+        textureCoords.push_back(QVector2D(x,y));
+    }//end of texture
+    else if (line[0] == 'v' && line[1] != 'n'){//case of coord
+        float x,y,z;
+        sscanf_s(line,"%s ",NULL);//dont read v
+        sscanf_s(line,"%f %f %f",&x,&y,&z);//read the 3 coordinates
+        vertexCoords.push_back(QVector3D(x,y,z));
+    }//end of coords
+    else if (line[0] == 'f'){//if its indices of a triangle (f vertx/vertex/vertex text/text/text norm/norm/norm)
+        GLushort v1,v2,v3;//vertex indices
+        sscanf_s(line,"%s ",NULL);//dont read f
+        sscanf_s(line,"%d/",&v1);//read the indice 1
+        sscanf_s(line,"%d/",&v2);
+        sscanf_s(line,"%d/ ",&v3);
+        indices.push_back(v1);
+        indices.push_back(v2);
+        indices.push_back(v3);
+    }//end of faces
+    }//end of lines
+
+    //now we create vertexdata structure
+    VertexData vertexs[vertexCoords.size()];
+    for (unsigned i = 0; i < vertexCoords.size(); i++){
+        vertexs[i] = {vertexCoords[i],textureCoords[i]};
+    }
+
+    arrayBuf.bind();
+    arrayBuf.allocate(vertexs, vertexCoords.size() * sizeof(VertexData));
+
+    // Transfer index data to VBO 1
+    indexBuf.bind();
+    indexBuf.allocate(indices.data(), indices.size() * sizeof(GLushort));//data() = array of vector elements
+
+    meshSize = vertexCoords.size();
+
+    f.close();
     //Create geometry stuff here (load the object mesh)
-    for (int i = 0; i < childs.size(); i++){
+    for (unsigned i = 0; i < childs.size(); i++){
         childs[i].CreateGeometry();
     }
 }

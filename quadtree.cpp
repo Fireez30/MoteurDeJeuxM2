@@ -5,7 +5,7 @@ using namespace std;
 
 void QuadTree::computerCenter(){
     float sumx,sumy,sumz = 0;
-    for (int i = 0; i < corners.size(); i++){
+    for (unsigned i = 0; i < corners.size(); i++){
         sumx += corners[i].x();
         sumy += corners[i].z();
         sumz += corners[i].z();
@@ -115,7 +115,7 @@ void QuadTree::DiviseAtLevel(int depth,int start)
 {
     if (!(start >= depth)){
         ComputeDivision();
-        for(int i = 0; i < childs.size(); i++)
+        for(unsigned i = 0; i < childs.size(); i++)
         {
             childs[i].DiviseAtLevel(depth,1+start);
         }

@@ -6,6 +6,8 @@
 #include <QQuaternion>
 #include "geometryengine.h"
 #include <QOpenGLBuffer>
+#include <QOpenGLFunctions>
+#include <QOpenGLShaderProgram>
 
 using namespace std;
 
@@ -27,7 +29,8 @@ protected:
     vector<BaseObject> childs;
     BaseObject* parent;
     int id;
-
+    string meshFile;
+    int meshSize;
 public :
     BaseObject();
     BaseObject(QQuaternion rot,QVector3D geo);
@@ -40,10 +43,10 @@ public :
     void Translate(QVector3D v);
     void SetChilds(vector<BaseObject> v);
     vector<BaseObject> GetChilds();
-    BaseObject GetChildAtIndex(int i);
+    BaseObject GetChildAtIndex(unsigned i);
     BaseObject* GetParent();
     void SetParent(BaseObject* b);
-    void SetChildAtIndex(BaseObject c, int i);
+    void SetChildAtIndex(BaseObject c, unsigned i);
     void CreateGeometry();
     void Render(QOpenGLShaderProgram *program);
     void UpdatePositionInSpace();
