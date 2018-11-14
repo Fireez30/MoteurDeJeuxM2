@@ -52,6 +52,7 @@
 #define MAINWIDGET_H
 
 #include "geometryengine.h"
+#include "cube.h"
 
 #include <QOpenGLWidget>
 #include "baseobject.h"
@@ -107,9 +108,9 @@ protected:
 private:
     QBasicTimer timer;
     QOpenGLShaderProgram program;
-    //GeometryEngine *geometries;
+    GeometryEngine *geometries;
     QOpenGLTexture *texture;
-    BaseObject scene;
+    //Cube scene;
     QMatrix4x4 projection;
 
 public slots:

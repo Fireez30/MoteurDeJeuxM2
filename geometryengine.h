@@ -61,14 +61,16 @@ public:
     int hmapsize = 0;
     GeometryEngine();
     virtual ~GeometryEngine();
-
+    int meshSize;
     void drawCubeGeometry(QOpenGLShaderProgram *program);
     void drawPlaneGeometry(QOpenGLShaderProgram *program);
     void drawQuadTreeGeometry(QOpenGLShaderProgram *program);
+    void drawMeshGeometry(QOpenGLShaderProgram *program);
 private:
     void initCubeGeometry();
     void initPlaneGeometry();
     void initQuadTreeGeometry();
+    void initMeshGeometry(std::string meshFile);
 
     QOpenGLBuffer arrayBuf;
     QOpenGLBuffer indexBuf;

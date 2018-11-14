@@ -72,7 +72,7 @@ MainWidget::MainWidget(QWidget *parent,int maxfps,int saison) :
     angularSpeed(0),
     actualSeason(saison)
 {
-
+    std::cout << "debut constructeur main widget" << std::endl;
     if (maxfps == 0)
         max_fps = 1;
     else
@@ -83,8 +83,7 @@ MainWidget::MainWidget(QWidget *parent,int maxfps,int saison) :
     v.push_back(QVector3D(200,0,0));
     v.push_back(QVector3D(0,0,200));
     v.push_back(QVector3D(200,200,0));
-    scene = Cube();
-    initializeGL();
+    //initializeGL();
 }
 
 MainWidget::~MainWidget()
@@ -220,10 +219,9 @@ void MainWidget::initializeGL()
     // Enable back face culling
     glEnable(GL_CULL_FACE);
 //! [2]
-
-
-    scene.CreateGeometry(QVector3D(0,0,0));//start with the basic level of details
-
+    geometries = new GeometryEngine;
+    //scene = Cube();
+    //scene.CreateGeometry();//start with the basic level of details
     rotation = QQuaternion::fromAxisAndAngle(1,0,0,135);
     // Use QBasicTimer because its faster than QTimer
 
@@ -321,5 +319,6 @@ void MainWidget::paintGL()
     program.setUniformValue("texture", 0);
 
     // Draw cube geometry
-    scene.Render(&program);//old version of this is drawTerrainGeometry();
+    geometries->drawMeshGeometry(&program);
+    //scene.Render(&program);//old version of this is drawTerrainGeometry();
 }
