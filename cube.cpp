@@ -10,7 +10,6 @@
 #include <QTime>
 
 Cube::Cube(){
-    std::cout << "id =" << id << std::endl;
 }
 
 void Cube::CreateGeometry()

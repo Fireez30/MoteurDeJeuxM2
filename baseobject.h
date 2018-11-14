@@ -23,12 +23,14 @@ class BaseObject : protected QOpenGLFunctions
 protected:
     QQuaternion rotation;
     QVector3D position;
+    QQuaternion realRotation;
+    QVector3D realPosition;
     GeometryEngine geometry;
     QOpenGLBuffer arrayBuf;
     QOpenGLBuffer indexBuf;
     vector<BaseObject> childs;
     BaseObject* parent;
-    int id;
+    int lod;
     string meshFile;
     int meshSize;
 public :
@@ -45,9 +47,10 @@ public :
     vector<BaseObject> GetChilds();
     BaseObject GetChildAtIndex(unsigned i);
     BaseObject* GetParent();
+    void chooseLOD(QVector3D cam);
     void SetParent(BaseObject* b);
     void SetChildAtIndex(BaseObject c, unsigned i);
-    void CreateGeometry();
+    void CreateGeometry(QVector3D cam);
     void Render(QOpenGLShaderProgram *program);
     void UpdatePositionInSpace();
 };

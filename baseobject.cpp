@@ -7,12 +7,12 @@
 #include "baseobject.h"
 #include <QImage>
 #include <QFile>
+#include <math.h>
 
 BaseObject::BaseObject() : indexBuf(QOpenGLBuffer::IndexBuffer){
     initializeOpenGLFunctions();
     rotation = QQuaternion(0,0,0,0);
     position = QVector3D(0,0,0);
-    id = 0;
     arrayBuf.create();
     indexBuf.create();
 }
@@ -83,8 +83,11 @@ void BaseObject::SetParent(BaseObject* b){
 }
 
 void BaseObject::UpdatePositionInSpace(){
-    rotation *= parent->GetRotation();
-    position += parent->GetPosition();
+    realRotation = rotation;//used not to update several times the rotation
+    realPosition = position;//used not to update several times the position
+
+    realRotation *= parent->GetRotation();
+    realPosition += parent->GetPosition();
     for (unsigned i = 0; i < childs.size(); i++){
         childs[i].UpdatePositionInSpace();
     }
@@ -116,16 +119,28 @@ void BaseObject::Render(QOpenGLShaderProgram *program)
     glDrawElements(GL_TRIANGLE_STRIP, meshSize * 3, GL_UNSIGNED_SHORT, 0);
     //Render stuff here (render the loaded mesh)
     for (unsigned i = 0; i < childs.size(); i++){
+        //we can optimize here (view dependant, too far from camera , ...)
         childs[i].Render(program);
     }
 }
 
-void BaseObject::CreateGeometry(){
+void BaseObject::chooseLOD(QVector3D cam){
+    this->UpdatePositionInSpace();
+    double d = sqrt(pow(cam.x - position.x,2)+pow(cam.y - position.y,2)+pow(cam.z - position.z,2));
+    if (d < 7)//values may change, just used these at the beggining
+        lod = 2;
+    else if (d < 20)
+        lod = 1;
+    else
+        lod = 0;
+}
+
+void BaseObject::CreateGeometry(QVector3D cam){
     std::vector<GLushort> indices;
     std::vector<QVector2D> textureCoords;
     std::vector<QVector3D> vertexCoords;
-
-    QFile f(meshFile.data());
+    string file = ""+lod+meshFile;//a file has different LODs represented as different files with the lod before the name of the file
+    QFile f(file.data());
     if (!f.open(QIODevice::ReadOnly)){
          std::cout<< " Erreur lors de l'ouverture du fichier" << endl;
          return;
@@ -181,8 +196,8 @@ void BaseObject::CreateGeometry(){
     meshSize = vertexCoords.size();
 
     f.close();
-    //Create geometry stuff here (load the object mesh)
+
     for (unsigned i = 0; i < childs.size(); i++){
-        childs[i].CreateGeometry();
+        childs[i].CreateGeometry(cam);
     }
 }

@@ -222,7 +222,7 @@ void MainWidget::initializeGL()
 //! [2]
 
 
-    scene.CreateGeometry();
+    scene.CreateGeometry(QVector3D(0,0,0));//start with the basic level of details
 
     rotation = QQuaternion::fromAxisAndAngle(1,0,0,135);
     // Use QBasicTimer because its faster than QTimer
