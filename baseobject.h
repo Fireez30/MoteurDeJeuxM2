@@ -25,7 +25,6 @@ protected:
     QVector3D position;
     QQuaternion realRotation;
     QVector3D realPosition;
-    GeometryEngine geometry;
     QOpenGLBuffer arrayBuf;
     QOpenGLBuffer indexBuf;
     vector<BaseObject> childs;
@@ -34,6 +33,8 @@ protected:
     string meshFile;
     int meshSize;
 public :
+    static int id;
+
     BaseObject();
     BaseObject(QQuaternion rot,QVector3D geo);
     ~BaseObject();

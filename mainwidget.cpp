@@ -308,7 +308,6 @@ void MainWidget::paintGL()
 
     texture->bind();
 //! [6]
-
     // Calculate model view transformation
     QMatrix4x4 matrix;
     matrix.translate(x, y, z);

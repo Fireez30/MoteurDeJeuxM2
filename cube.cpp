@@ -9,7 +9,8 @@
 #include <QVector3D>
 #include <QTime>
 
-Cube::Cube(){
+Cube::Cube() {
+
 }
 
 void Cube::CreateGeometry()

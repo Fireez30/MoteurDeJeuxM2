@@ -16,7 +16,13 @@ windowsinput::windowsinput(QWidget *p) : widget(0,1,0), widget2(0,10,1), widget3
 void windowsinput::showF(){
     QGridLayout *lay = new QGridLayout();
     lay->addWidget(&widget);
+    lay->addWidget(&widget2);
+    lay->addWidget(&widget3);
+    lay->addWidget(&widget4);
     connect(this,SIGNAL(timerSeason(int)),&widget,SLOT(changeSeason(int)));
+    connect(this,SIGNAL(timerSeason(int)),&widget2,SLOT(changeSeason(int)));
+    connect(this,SIGNAL(timerSeason(int)),&widget3,SLOT(changeSeason(int)));
+    connect(this,SIGNAL(timerSeason(int)),&widget4,SLOT(changeSeason(int)));
     setMinimumSize(QSize(800,800));
     setLayout(lay);
     show();

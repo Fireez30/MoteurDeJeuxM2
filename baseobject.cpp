@@ -9,12 +9,15 @@
 #include <QFile>
 #include <math.h>
 
+int BaseObject::id = 0;
+
 BaseObject::BaseObject() : indexBuf(QOpenGLBuffer::IndexBuffer){
     initializeOpenGLFunctions();
     rotation = QQuaternion(0,0,0,0);
     position = QVector3D(0,0,0);
     arrayBuf.create();
     indexBuf.create();
+    id++;
 }
 
 BaseObject::BaseObject(QQuaternion rot,QVector3D geo) : indexBuf(QOpenGLBuffer::IndexBuffer){
@@ -23,6 +26,7 @@ BaseObject::BaseObject(QQuaternion rot,QVector3D geo) : indexBuf(QOpenGLBuffer::
     position = geo;
     arrayBuf.create();
     indexBuf.create();
+    id++;
 }
 
 BaseObject::~BaseObject(){
@@ -126,7 +130,7 @@ void BaseObject::Render(QOpenGLShaderProgram *program)
 
 void BaseObject::chooseLOD(QVector3D cam){
     this->UpdatePositionInSpace();
-    double d = sqrt(pow(cam.x - position.x,2)+pow(cam.y - position.y,2)+pow(cam.z - position.z,2));
+    double d = sqrt(pow(cam.x() - position.x(),2)+pow(cam.y() - position.y(),2)+pow(cam.z() - position.z(),2));
     if (d < 7)//values may change, just used these at the beggining
         lod = 2;
     else if (d < 20)
