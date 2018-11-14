@@ -243,7 +243,7 @@ void GeometryEngine::initMeshGeometry(std::string meshFile){
     res = f.readLine(line,64);
     }
     //end of lines
-
+    std::cout << "Fin de lecture des lignes" << std::endl;
     //now we create vertexdata structure
     VertexData vertexs[vertexCoords.size()];
     for (unsigned i = 0; i < vertexCoords.size(); i++){
@@ -257,7 +257,7 @@ void GeometryEngine::initMeshGeometry(std::string meshFile){
     indexBuf.bind();
     indexBuf.allocate(indices.data(), indices.size() * sizeof(GLushort));//data() = array of vector elements
 
-    meshSize = vertexCoords.size();
+    meshSize = indices.size();
 
     f.close();
 }
@@ -285,7 +285,7 @@ void GeometryEngine::drawMeshGeometry(QOpenGLShaderProgram *program)
     program->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
 
     // Draw cube geometry using indices from VBO 1
-    glDrawElements(GL_TRIANGLE_STRIP, meshSize * 3, GL_UNSIGNED_SHORT, 0);
+    glDrawElements(GL_TRIANGLE_STRIP, meshSize, GL_UNSIGNED_SHORT, 0);
 }
 
 void GeometryEngine::drawQuadTreeGeometry(QOpenGLShaderProgram *program)
