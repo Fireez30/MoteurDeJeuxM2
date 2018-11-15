@@ -65,7 +65,7 @@ struct VertexData
 
 //! [0]
 GeometryEngine::GeometryEngine()
-    : indexBuf(QOpenGLBuffer::IndexBuffer)
+    : indexBuf(QOpenGLBuffer::IndexBuffer),indexBuf1(QOpenGLBuffer::IndexBuffer),indexBuf2(QOpenGLBuffer::IndexBuffer)
 {
     initializeOpenGLFunctions();
 
@@ -73,8 +73,17 @@ GeometryEngine::GeometryEngine()
     arrayBuf.create();
     indexBuf.create();
 
+    arrayBuf1.create();
+    indexBuf1.create();
+
+    arrayBuf2.create();
+    indexBuf2.create();
+
+    lod = 0;
     // Initializes cube geometry and transfers it to VBOs
-    initMeshGeometry("mesh.obj");
+    initMeshGeometry("mesh.obj"); //still didn't find a 3 differents LOD model
+    //initMeshGeometry1("mesh.obj");
+    //initMeshGeometry2("mesh.obj");
 }
 
 GeometryEngine::~GeometryEngine()
@@ -193,12 +202,147 @@ void GeometryEngine::initQuadTreeGeometry()
 {
 
 }
-
-void GeometryEngine::initMeshGeometry(std::string meshFile){
+void GeometryEngine::initMeshGeometry1(std::string meshFile){//LOD 1
     std::vector<GLushort> indices;
     std::vector<QVector2D> textureCoords;
     std::vector<QVector3D> vertexCoords;
-    std::string file = "C:\\Users\\Fireez\\Documents\\GitHub\\MoteurDeJeuxM2\\" + meshFile;
+    std::string file = "C:\\Users\\Fireez\\Documents\\GitHub\\MoteurDeJeuxM2\\1" + meshFile;//LOD1.
+    std::cout << "File :" << file << std::endl;
+    QFile f(file.data());
+    if (!f.open(QIODevice::ReadOnly)){
+         std::cout<< " Erreur lors de l'ouverture du fichier" << endl;
+         return;
+    }
+    std::cout << "Fichier ouvert ! " << std::endl;
+    char filter[256];
+    f.readLine(filter,256);
+    while (filter[0] == '#')//remove commentaries lines at the begginin
+    {
+        f.readLine(filter,256);
+    }
+    std::cout << "avant lecture premiere ligne" << std::endl;
+    char line[64];
+    int res = f.readLine(line,64);
+     std::cout << "apres lecture premiere ligne res = " << res << std::endl;
+    while (res != EOF){
+        std::cout << "res = " << res << endl;
+    if (line[0] == 'v' && line[1] == 't'){//case of the texture
+        float x,y;
+        sscanf(line,"%s%s ",NULL,NULL);//dont read v and t
+        sscanf(line,"%f %f",&x,&y);//read both coordinates
+        textureCoords.push_back(QVector2D(x,y));
+    }//end of texture
+    else if (line[0] == 'v' && line[1] != 'n'){//case of coord
+        float x,y,z;
+        sscanf(line,"%s ",NULL);//dont read v
+        sscanf(line,"%f %f %f",&x,&y,&z);//read the 3 coordinates
+        vertexCoords.push_back(QVector3D(x,y,z));
+    }//end of coords
+    else if (line[0] == 'f'){//if its indices of a triangle (f vertx/vertex/vertex text/text/text norm/norm/norm)
+        GLushort v1,v2,v3;//vertex indices
+        sscanf(line,"%s ",NULL);//dont read f
+        sscanf(line,"%d/",&v1);//read the indice 1
+        sscanf(line,"%d/",&v2);
+        sscanf(line,"%d/ ",&v3);
+        indices.push_back(v1);
+        indices.push_back(v2);
+        indices.push_back(v3);
+    }//end of faces
+    res = f.readLine(line,64);
+    }
+    //end of lines
+    std::cout << "Fin de lecture des lignes" << std::endl;
+    //now we create vertexdata structure
+    VertexData vertexs[vertexCoords.size()];
+    for (unsigned i = 0; i < vertexCoords.size(); i++){
+        vertexs[i] = {vertexCoords[i],textureCoords[i]};
+    }
+
+    arrayBuf1.bind();
+    arrayBuf1.allocate(vertexs, vertexCoords.size() * sizeof(VertexData));
+
+    // Transfer index data to VBO 1
+    indexBuf1.bind();
+    indexBuf1.allocate(indices.data(), indices.size() * sizeof(GLushort));//data() = array of vector elements
+
+    meshSize1 = indices.size();
+
+    f.close();
+}
+
+void GeometryEngine::initMeshGeometry2(std::string meshFile){//LOD 2
+    std::vector<GLushort> indices;
+    std::vector<QVector2D> textureCoords;
+    std::vector<QVector3D> vertexCoords;
+    std::string file = "C:\\Users\\Fireez\\Documents\\GitHub\\MoteurDeJeuxM2\\2" + meshFile;//LOD2.
+    std::cout << "File :" << file << std::endl;
+    QFile f(file.data());
+    if (!f.open(QIODevice::ReadOnly)){
+         std::cout<< " Erreur lors de l'ouverture du fichier" << endl;
+         return;
+    }
+    std::cout << "Fichier ouvert ! " << std::endl;
+    char filter[256];
+    f.readLine(filter,256);
+    while (filter[0] == '#')//remove commentaries lines at the begginin
+    {
+        f.readLine(filter,256);
+    }
+    std::cout << "avant lecture premiere ligne" << std::endl;
+    char line[64];
+    int res = f.readLine(line,64);
+     std::cout << "apres lecture premiere ligne res = " << res << std::endl;
+    while (res != EOF){
+        std::cout << "res = " << res << endl;
+    if (line[0] == 'v' && line[1] == 't'){//case of the texture
+        float x,y;
+        sscanf(line,"%s%s ",NULL,NULL);//dont read v and t
+        sscanf(line,"%f %f",&x,&y);//read both coordinates
+        textureCoords.push_back(QVector2D(x,y));
+    }//end of texture
+    else if (line[0] == 'v' && line[1] != 'n'){//case of coord
+        float x,y,z;
+        sscanf(line,"%s ",NULL);//dont read v
+        sscanf(line,"%f %f %f",&x,&y,&z);//read the 3 coordinates
+        vertexCoords.push_back(QVector3D(x,y,z));
+    }//end of coords
+    else if (line[0] == 'f'){//if its indices of a triangle (f vertx/vertex/vertex text/text/text norm/norm/norm)
+        GLushort v1,v2,v3;//vertex indices
+        sscanf(line,"%s ",NULL);//dont read f
+        sscanf(line,"%hu/",&v1);//read the indice 1
+        sscanf(line,"%hu/",&v2);
+        sscanf(line,"%hu/ ",&v3);
+        indices.push_back(v1);
+        indices.push_back(v2);
+        indices.push_back(v3);
+    }//end of faces
+    res = f.readLine(line,64);
+    }
+    //end of lines
+    std::cout << "Fin de lecture des lignes" << std::endl;
+    //now we create vertexdata structure
+    VertexData vertexs[vertexCoords.size()];
+    for (unsigned i = 0; i < vertexCoords.size(); i++){
+        vertexs[i] = {vertexCoords[i],textureCoords[i]};
+    }
+
+    arrayBuf2.bind();
+    arrayBuf2.allocate(vertexs, vertexCoords.size() * sizeof(VertexData));
+
+    // Transfer index data to VBO 1
+    indexBuf2.bind();
+    indexBuf2.allocate(indices.data(), indices.size() * sizeof(GLushort));//data() = array of vector elements
+
+    meshSize2 = indices.size();
+
+    f.close();
+}
+
+void GeometryEngine::initMeshGeometry(std::string meshFile){//LOD 0
+    std::vector<GLushort> indices;
+    std::vector<QVector2D> textureCoords;
+    std::vector<QVector3D> vertexCoords;
+    std::string file = "C:\\Users\\Fireez\\Documents\\GitHub\\MoteurDeJeuxM2\\0" + meshFile;//LOD 0.
     std::cout << "File :" << file << std::endl;
     QFile f(file.data());
     if (!f.open(QIODevice::ReadOnly)){
@@ -264,9 +408,28 @@ void GeometryEngine::initMeshGeometry(std::string meshFile){
 
 void GeometryEngine::drawMeshGeometry(QOpenGLShaderProgram *program)
 {
+    int size = 0;
     // Tell OpenGL which VBOs to use
-    arrayBuf.bind();
-    indexBuf.bind();
+    switch (lod){
+        case 0:
+            arrayBuf.bind();
+            indexBuf.bind();
+            size = meshSize;
+            break;
+
+        case 1:
+            arrayBuf1.bind();
+            indexBuf1.bind();
+            size = meshSize1;
+            break;
+
+        case 2:
+            arrayBuf2.bind();
+            indexBuf2.bind();
+            size = meshSize2;
+            break;
+    }
+
 
     // Offset for position
     quintptr offset = 0;
@@ -285,7 +448,8 @@ void GeometryEngine::drawMeshGeometry(QOpenGLShaderProgram *program)
     program->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
 
     // Draw cube geometry using indices from VBO 1
-    glDrawElements(GL_TRIANGLE_STRIP, meshSize, GL_UNSIGNED_SHORT, 0);
+
+    glDrawElements(GL_TRIANGLE_STRIP, size, GL_UNSIGNED_SHORT, 0);
 }
 
 void GeometryEngine::drawQuadTreeGeometry(QOpenGLShaderProgram *program)

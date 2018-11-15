@@ -61,19 +61,31 @@ public:
     int hmapsize = 0;
     GeometryEngine();
     virtual ~GeometryEngine();
-    int meshSize;
+
+    int meshSize;//LOD 0
+    int meshSize1;//LOD 1
+    int meshSize2;//LOD 2
+
+    int lod;
+
     void drawCubeGeometry(QOpenGLShaderProgram *program);
     void drawPlaneGeometry(QOpenGLShaderProgram *program);
     void drawQuadTreeGeometry(QOpenGLShaderProgram *program);
-    void drawMeshGeometry(QOpenGLShaderProgram *program);
+    void drawMeshGeometry(QOpenGLShaderProgram *program);//need only 1 function here, the LOD choice is done inside the function
 private:
     void initCubeGeometry();
     void initPlaneGeometry();
     void initQuadTreeGeometry();
-    void initMeshGeometry(std::string meshFile);
+    void initMeshGeometry(std::string meshFile);//LOD 0
+    void initMeshGeometry1(std::string meshFile);//LOD 1
+    void initMeshGeometry2(std::string meshFile);//LOD 2
 
-    QOpenGLBuffer arrayBuf;
-    QOpenGLBuffer indexBuf;
+    QOpenGLBuffer arrayBuf;//LOD 0
+    QOpenGLBuffer indexBuf;//LOD 0
+    QOpenGLBuffer arrayBuf1;//LOD 1
+    QOpenGLBuffer indexBuf1;//LOD 1
+    QOpenGLBuffer arrayBuf2;//LOD 2
+    QOpenGLBuffer indexBuf2;//LOD 2
 };
 
 #endif // GEOMETRYENGINE_H
