@@ -9,7 +9,7 @@
 #include <iostream>
 #include <QTime>
 
-windowsinput::windowsinput(QWidget *p) : widget(0,1,0), widget2(0,10,1), widget3(0,100,2), widget4(0,1000,3), w(0),QOpenGLWidget(p){
+windowsinput::windowsinput(QWidget *p) : widget(0,100,0), widget2(0,10,1), widget3(0,100,2), widget4(0,1000,3), w(0),QOpenGLWidget(p){
  std::cout << "debut constructeur windowsinput" << std::endl;
 }
 

@@ -99,6 +99,7 @@ void BaseObject::UpdatePositionInSpace(){
 
 void BaseObject::Render(QOpenGLShaderProgram *program)
 {
+     //PAS A JOUR, CF GEOMETRY ENGINE
     // Tell OpenGL which VBOs to use
     arrayBuf.bind();
     indexBuf.bind();
@@ -140,6 +141,7 @@ void BaseObject::chooseLOD(QVector3D cam){
 }
 
 void BaseObject::CreateGeometry(QVector3D cam){
+    //PAS A JOUR, CF GEOMETRY ENGINE
     std::vector<GLushort> indices;
     std::vector<QVector2D> textureCoords;
     std::vector<QVector3D> vertexCoords;

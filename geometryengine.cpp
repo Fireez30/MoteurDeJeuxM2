@@ -57,6 +57,7 @@
 #include <QImage>
 #include <iostream>
 #include <QFile>
+#include <iostream>
 struct VertexData
 {
     QVector3D position;
@@ -449,7 +450,7 @@ void GeometryEngine::drawMeshGeometry(QOpenGLShaderProgram *program)
 
     // Draw cube geometry using indices from VBO 1
 
-    glDrawElements(GL_TRIANGLE_STRIP, size, GL_UNSIGNED_SHORT, 0);
+    glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, 0);
 }
 
 void GeometryEngine::drawQuadTreeGeometry(QOpenGLShaderProgram *program)
